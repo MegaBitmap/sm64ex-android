@@ -82,7 +82,7 @@ void sys_fatal(const char *fmt, ...) {
 #ifdef HAVE_SDL2
 
 // we can just ask SDL for most of this shit if we have it
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 
 #ifdef __ANDROID__

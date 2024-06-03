@@ -5,7 +5,7 @@
 #include <stdbool.h>
 #include <math.h>
 
-#include <SDL2/SDL.h>
+#include <SDL.h>
 
 // Analog camera movement by Pathétique (github.com/vrmiguel), y0shin and Mors
 // Contribute or communicate bugs at github.com/vrmiguel/sm64-analog-camera
