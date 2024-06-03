@@ -9,7 +9,7 @@ else {
 
 android {
     if (buildAsApplication) {
-        namespace "org.libsdl.app"
+        namespace "com.vdavid003.sm64port"
     }
     compileSdkVersion 34
     defaultConfig {
@@ -62,7 +62,7 @@ android {
             variant.outputs.each { output ->
                 def outputFile = output.outputFile
                 if (outputFile != null && outputFile.name.endsWith(".aar")) {
-                    def fileName = "org.libsdl.app.aar";
+                    def fileName = "com.vdavid003.sm64port.aar";
                     output.outputFile = new File(outputFile.parent, fileName);
                 }
             }
