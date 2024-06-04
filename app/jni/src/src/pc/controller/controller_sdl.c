@@ -41,6 +41,11 @@ static bool haptics_enabled;
 static SDL_GameController *sdl_cntrl;
 static SDL_Haptic *sdl_haptic;
 
+static int16_t leftx;
+static int16_t lefty;
+static int16_t ltrig;
+static int16_t rtrig;
+
 static u32 num_joy_binds = 0;
 static u32 num_mouse_binds = 0;
 static u32 joy_binds[MAX_JOYBINDS][2];
@@ -186,12 +191,16 @@ static void controller_sdl_read(OSContPad *pad) {
             return;
         }
     }
-
+	
+	bool inputChanged = false;
     for (u32 i = 0; i < SDL_CONTROLLER_BUTTON_MAX; ++i) {
         const bool new = SDL_GameControllerGetButton(sdl_cntrl, i);
         const bool pressed = !joy_buttons[i] && new;
         joy_buttons[i] = new;
-        if (pressed) last_joybutton = i;
+        if (pressed) {
+			last_joybutton = i;
+			inputChanged=true;
+		}
     }
 
     u32 buttons_down = 0;
@@ -212,13 +221,26 @@ static void controller_sdl_read(OSContPad *pad) {
     else if (ystick == STICK_UP)
         pad->stick_y = 127;
 
-    int16_t leftx = SDL_GameControllerGetAxis(sdl_cntrl, SDL_CONTROLLER_AXIS_LEFTX);
-    int16_t lefty = SDL_GameControllerGetAxis(sdl_cntrl, SDL_CONTROLLER_AXIS_LEFTY);
+	int16_t previousLeftX = leftx;
+    int16_t previousLeftY = lefty;
+    int16_t previousRightX = rightx;
+    int16_t previousRightY = righty;
+    int16_t previousLTrig = ltrig;
+    int16_t previousRTrig = rtrig;
+
+    leftx = SDL_GameControllerGetAxis(sdl_cntrl, SDL_CONTROLLER_AXIS_LEFTX);
+    lefty = SDL_GameControllerGetAxis(sdl_cntrl, SDL_CONTROLLER_AXIS_LEFTY);
     rightx = SDL_GameControllerGetAxis(sdl_cntrl, SDL_CONTROLLER_AXIS_RIGHTX);
     righty = SDL_GameControllerGetAxis(sdl_cntrl, SDL_CONTROLLER_AXIS_RIGHTY);
 
-    int16_t ltrig = SDL_GameControllerGetAxis(sdl_cntrl, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
-    int16_t rtrig = SDL_GameControllerGetAxis(sdl_cntrl, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+    ltrig = SDL_GameControllerGetAxis(sdl_cntrl, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
+    rtrig = SDL_GameControllerGetAxis(sdl_cntrl, SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
+
+    if(leftx!=previousLeftX||lefty!=previousLeftY||rightx!=previousRightX||righty!=previousRightY||ltrig!=previousLTrig||rtrig!=previousRTrig)
+        inputChanged = true;
+
+	if(inputChanged)
+        set_current_input(sdlGameController);
 
 #ifdef TARGET_WEB
     // Firefox has a bug: https://bugzilla.mozilla.org/show_bug.cgi?id=1606562
